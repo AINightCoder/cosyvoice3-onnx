@@ -16,14 +16,14 @@
 - Python ≥ 3.10（实测 3.10.16）
 - 关键依赖版本固定，**不要随手升级**：
 
-  | 依赖 | 版本 |
-  | --- | --- |
-  | `onnxruntime` | `1.18.0` |
-  | `numpy` | `1.26.4` |
-  | `librosa` | `0.10.2` |
+  | 依赖             | 版本       |
+  | ---------------- | ---------- |
+  | `onnxruntime`  | `1.18.0` |
+  | `numpy`        | `1.26.4` |
+  | `librosa`      | `0.10.2` |
   | `transformers` | `4.51.3` |
-  | `scipy` | `1.13.1` |
-  | `soundfile` | `0.12.1` |
+  | `scipy`        | `1.13.1` |
+  | `soundfile`    | `0.12.1` |
 
   `onnxruntime 1.19+` 可能在 FP16 ONNX 上不兼容，`numpy 2.x` 会破坏依赖链。
 
@@ -49,10 +49,10 @@ uv run python -c "from huggingface_hub import snapshot_download; snapshot_downlo
 ```powershell
 uv run python "pretrained_models/Fun-CosyVoice3-0.5B/onnx/scripts/onnx_inference_pure.py" `
   --config "configs/cosyvoice_zh_quality.json" `
-  --text "你好，这是一次中文语音合成测试。" `
+  --text "在这宁静的夜晚，我们可以沿着小路慢慢走，感受微风拂面的轻柔，与自然融为一体。" `
   --prompt_wav "prompts/Zh_7_prompt.wav" `
-  --prompt_text "<把 Zh_7_prompt.wav 真实说的话逐字写在这里>" `
-  --output "output/zh_test.wav"
+  --prompt_text "今夜的月光如此清亮，不做些什么真是浪费。随我一同去月下漫步吧，不许拒绝。" `
+  --output "output/output_test.wav"
 ```
 
 > **关键**：`--prompt_text` 必须是 `--prompt_wav` 的精确逐字稿。哪怕只差几个字，模型也会"幻觉"，把 prompt_text 内容混入输出。
@@ -61,18 +61,18 @@ uv run python "pretrained_models/Fun-CosyVoice3-0.5B/onnx/scripts/onnx_inference
 
 CLI 参数会覆盖配置文件。常用项：
 
-| 参数 | 默认 | 含义 |
-| --- | --- | --- |
-| `sampling_k` | `25` | Top-k 采样。`1` 为 greedy（最稳定但单调） |
-| `temperature` | `1.0` | 采样温度。短文本建议 0.6–0.8 |
-| `max_len` | `500` | 生成 speech token 数上限（1 token ≈ 40 ms） |
-| `max_len_ratio` | `20.0` | 每个 tts text token 最多对应几个 speech token |
-| `min_len_ratio` | `2.0` | 每个 tts text token 至少对应几个 speech token（影响 EOS 触发） |
-| `max_silent_tokens` | `5` | 连续静音/呼吸 token 上限 |
-| `flow_steps` | `10` | Flow Matching 步数。`20–30` 音色更自然但 CPU 慢 |
-| `trim_silence` | `false` | 去除首尾低能量段 |
-| `speed` | `1.0` | 语速倍率，> 1 更快 |
-| `seed` | `null` | 随机种子，固定后可复现 |
+| 参数                  | 默认      | 含义                                                           |
+| --------------------- | --------- | -------------------------------------------------------------- |
+| `sampling_k`        | `25`    | Top-k 采样。`1` 为 greedy（最稳定但单调）                    |
+| `temperature`       | `1.0`   | 采样温度。短文本建议 0.6–0.8                                  |
+| `max_len`           | `500`   | 生成 speech token 数上限（1 token ≈ 40 ms）                   |
+| `max_len_ratio`     | `20.0`  | 每个 tts text token 最多对应几个 speech token                  |
+| `min_len_ratio`     | `2.0`   | 每个 tts text token 至少对应几个 speech token（影响 EOS 触发） |
+| `max_silent_tokens` | `5`     | 连续静音/呼吸 token 上限                                       |
+| `flow_steps`        | `10`    | Flow Matching 步数。`20–30` 音色更自然但 CPU 慢             |
+| `trim_silence`      | `false` | 去除首尾低能量段                                               |
+| `speed`             | `1.0`   | 语速倍率，> 1 更快                                             |
+| `seed`              | `null`  | 随机种子，固定后可复现                                         |
 
 ### 输出多读 prompt_text / 漏掉 tts_text 后半段
 
