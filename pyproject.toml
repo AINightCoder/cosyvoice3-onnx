@@ -1,0 +1,15 @@
+[project]
+name = "cosyvoice3-onnx"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "huggingface-hub>=0.30.0",
+    "librosa==0.10.2",
+    "numpy==1.26.4",
+    "onnxruntime==1.18.0",
+    "scipy==1.13.1",
+    "soundfile==0.12.1",
+    "transformers==4.51.3",
+]
