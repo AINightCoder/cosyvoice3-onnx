@@ -1,15 +1,15 @@
 {
   "prompt_prefix": "",
-  "sampling_k": 5,
+  "sampling_k": 30,
   "temperature": 0.75,
   "min_len": 0,
-  "max_len": 500,
-  "max_len_ratio": 20,
-  "flow_steps": 30,
+  "max_len": 200,
+  "max_len_ratio": 10,
+  "flow_steps": 10,
   "max_silent_tokens": 5,
   "speed": 1.0,
   "trim_silence": true,
   "trim_threshold": 0.006,
   "trim_pad_ms": 120,
-  "seed": 0
+  "seed": 1234
 }
