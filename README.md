@@ -10,6 +10,7 @@
 - **零样本声音克隆**：给一段 3–10 秒参考音频 + 它的逐字稿，即可用该音色合成任意文本。
 - **多语言**：自动识别中文 / 英文 / 日文 / 韩文 / 德 / 西 / 法 / 意 / 俄 等，**不要**写 `<|zh|>` 这类语言标签。
 - **可调推理参数**：采样、长度、流匹配步数等通过 JSON 配置或 CLI 覆盖，方便针对长文本 / 短文本调优。
+- **`tts` 短命令**：内置 CLI 把声音预设（wav + 逐字稿）固化在 `prompts/voices.json`，调用时只需 `uv run tts "<文本>" -v <预设>`，无需再手抄逐字稿。
 
 ## 环境
 
@@ -46,6 +47,29 @@ uv run python -c "from huggingface_hub import snapshot_download; snapshot_downlo
 
 ## 快速开始
 
+声音预设登记在 [`prompts/voices.json`](prompts/voices.json)（`name -> { wav, text }`）。`uv sync` 之后用 `tts` 命令合成：
+
+```powershell
+# 列出所有预设
+uv run tts --list
+
+# 用 zh_7 预设合成；输出默认落到 output/zh_7_<slug>_<时间戳>.wav
+uv run tts "在这宁静的夜晚，我们可以沿着小路慢慢走，感受微风拂面的轻柔，与自然融为一体。" -v zh_7
+
+# 显式指定输出文件、覆盖配置、覆盖任意推理参数
+uv run tts "短句也能跑。" -v zh_7 -o output/demo.wav -c configs/cosyvoice_zh_quality.json --temperature 0.7
+
+# 预演（只打印底层命令，不实际推理）
+uv run tts "..." -v zh_7 -n
+```
+
+新增自己的声音：把 wav 放到 `prompts/`，在 `voices.json` 里加一条 `{ "wav": "...", "text": "<逐字稿>" }` 即可。
+
+> **关键**：`text` 必须是 `wav` 的精确逐字稿。哪怕只差几个字，模型也会"幻觉"，把 prompt_text 内容混入输出。
+
+<details>
+<summary>底层调用（不经过 <code>tts</code> 包装）</summary>
+
 ```powershell
 uv run python "pretrained_models/Fun-CosyVoice3-0.5B/onnx/scripts/onnx_inference_pure.py" `
   --config "configs/cosyvoice_zh_quality.json" `
@@ -55,7 +79,8 @@ uv run python "pretrained_models/Fun-CosyVoice3-0.5B/onnx/scripts/onnx_inference
   --output "output/output_test.wav"
 ```
 
-> **关键**：`--prompt_text` 必须是 `--prompt_wav` 的精确逐字稿。哪怕只差几个字，模型也会"幻觉"，把 prompt_text 内容混入输出。
+`tts` 只是把预设展开成等价的 `--prompt_wav` / `--prompt_text`，未被识别的参数原样透传给该脚本。
+</details>
 
 ## 推理参数（`configs/*.json`）
 
@@ -86,11 +111,13 @@ zero-shot 模式典型故障，定位顺序：
 
 ```
 cosyvoice3-onnx/
+├── main.py                           # `tts` CLI 入口（薄包装，转发到下方推理脚本）
 ├── configs/
 │   └── cosyvoice_zh_quality.json     # 推理配置示例
 ├── docs/
 │   └── usage.md                      # 完整使用教程（含性能/常见问题）
-├── prompts/                          # 用户自备参考音频
+├── prompts/                          # 参考音频 + 声音预设登记
+│   └── voices.json                   # name -> { wav, text }，由 `tts -v <name>` 使用
 ├── pretrained_models/
 │   └── Fun-CosyVoice3-0.5B/onnx/
 │       ├── *.onnx                    # 14 个 ONNX 模型（从 HF 下载，不入 git）

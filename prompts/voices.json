@@ -1,0 +1,24 @@
+{
+  "_help": "声音预设：name -> { wav, text }。text 必须是 wav 的精确逐字稿，否则会触发幻觉。新增声音时先在此登记，再用 -v <name> 调用。",
+
+  "zh_7": {
+    "wav": "prompts/Zh_7_prompt.wav",
+    "text": "今夜的月光如此清亮，不做些什么真是浪费。随我一同去月下漫步吧，不许拒绝。"
+  },
+  "zh_7_3s": {
+    "wav": "prompts/Zh_7_prompt_3s.wav",
+    "text": "今夜的月光如此清亮"
+  },
+  "zh_7_6s": {
+    "wav": "prompts/Zh_7_prompt_6s.wav",
+    "text": "今夜的月光如此清亮，不做些什么真是浪费。"
+  },
+  "zh_f": {
+    "wav": "prompts/zh_f.wav",
+    "text": "我说你这只大鸟,真是不讲理, 我对你做什么了呀, 你就要吞了我。"
+  },
+  "peppa": {
+    "wav": "prompts/peppa_sft1.wav",
+    "text": "哦这就是 我想要跟你说的事情，我们是这么说的，在泥坑里面跳来跳去。"
+  }
+}
