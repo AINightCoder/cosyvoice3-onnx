@@ -11,7 +11,8 @@ wheels/
 .omc
 output
 
-# Pretrained model weights (download separately from HuggingFace)
-# pretrained_models/
-.recover
+# ONNX model weights (download from HuggingFace, too large for git)
 pretrained_models/Fun-CosyVoice3-0.5B/onnx/*.onnx
+
+# Recovery scratch dir
+.recover

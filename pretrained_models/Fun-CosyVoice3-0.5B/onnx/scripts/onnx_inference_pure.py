@@ -319,6 +319,7 @@ class PureOnnxCosyVoice3:
         max_len: int = 500,
         min_len: int = 10,
         max_len_ratio: float = 20.0,
+        min_len_ratio: float = 2.0,
         max_silent_tokens: int = 5
     ) -> np.ndarray:
         """Generate speech tokens using pure ONNX (zero-shot mode)
@@ -332,6 +333,8 @@ class PureOnnxCosyVoice3:
             max_len: Maximum output length
             min_len: Minimum output length
             max_len_ratio: Maximum generated speech tokens per TTS text token
+            min_len_ratio: Minimum generated speech tokens per TTS text token
+                (lower bound applied as int(tts_text_len * min_len_ratio))
             max_silent_tokens: Maximum consecutive silent/breath tokens to keep
 
         Returns:
@@ -398,7 +401,7 @@ class PureOnnxCosyVoice3:
         )[0]
 
         # Calculate min/max length based on TTS text (not including prompt text)
-        min_len = max(min_len, int(tts_text_len * 2))
+        min_len = max(min_len, int(tts_text_len * min_len_ratio))
         max_len = min(max_len, int(tts_text_len * max_len_ratio))
         print(f"    Generating {min_len}-{max_len} tokens...")
 
@@ -755,6 +758,7 @@ class PureOnnxCosyVoice3:
         min_len: int = 10,
         flow_steps: int = 10,
         max_len_ratio: float = 20.0,
+        min_len_ratio: float = 2.0,
         max_silent_tokens: int = 5,
         speed: float = 1.0,
         trim_silence: bool = False,
@@ -811,6 +815,8 @@ class PureOnnxCosyVoice3:
             raise ValueError("flow_steps must be >= 1")
         if max_len_ratio <= 0:
             raise ValueError("max_len_ratio must be > 0")
+        if min_len_ratio < 0:
+            raise ValueError("min_len_ratio must be >= 0")
         if max_silent_tokens < 0:
             raise ValueError("max_silent_tokens must be >= 0")
         if speed <= 0:
@@ -863,6 +869,7 @@ class PureOnnxCosyVoice3:
             max_len=max_len,
             min_len=min_len,
             max_len_ratio=max_len_ratio,
+            min_len_ratio=min_len_ratio,
             max_silent_tokens=max_silent_tokens
         )
         llm_time = time.time() - llm_start
@@ -968,6 +975,7 @@ DEFAULT_INFERENCE_OPTIONS = {
     'min_len': 10,
     'flow_steps': 10,
     'max_len_ratio': 20.0,
+    'min_len_ratio': 2.0,
     'max_silent_tokens': 5,
     'speed': 1.0,
     'trim_silence': False,
@@ -1055,6 +1063,9 @@ Note:
                         help='Flow matching steps. Try 20 or 30 for less synthetic sound; slower on CPU')
     parser.add_argument('--max_len_ratio', type=float, default=None,
                         help='Maximum generated speech tokens per TTS text token')
+    parser.add_argument('--min_len_ratio', type=float, default=None,
+                        help='Minimum generated speech tokens per TTS text token '
+                             '(lower values let EOS fire earlier; try 0.5-1.0 if output drifts into prompt)')
     parser.add_argument('--max_silent_tokens', type=int, default=None,
                         help='Maximum consecutive silent/breath tokens to keep')
     parser.add_argument('--speed', type=float, default=None,
@@ -1095,6 +1106,7 @@ Note:
         f"min_len={options['min_len']}, "
         f"max_len={options['max_len']}, "
         f"max_len_ratio={options['max_len_ratio']}, "
+        f"min_len_ratio={options['min_len_ratio']}, "
         f"flow_steps={options['flow_steps']}, "
         f"max_silent_tokens={options['max_silent_tokens']}, "
         f"speed={options['speed']}, "
@@ -1117,6 +1129,7 @@ Note:
         min_len=options['min_len'],
         flow_steps=options['flow_steps'],
         max_len_ratio=options['max_len_ratio'],
+        min_len_ratio=options['min_len_ratio'],
         max_silent_tokens=options['max_silent_tokens'],
         speed=options['speed'],
         trim_silence=options['trim_silence'],
