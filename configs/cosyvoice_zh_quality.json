@@ -1,6 +1,6 @@
 {
   "prompt_prefix": "",
-  "sampling_k": 30,
+  "sampling_k": 5,
   "temperature": 0.75,
   "min_len": 0,
   "max_len": 200,
