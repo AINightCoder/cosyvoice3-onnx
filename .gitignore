@@ -10,3 +10,6 @@ wheels/
 .venv
 .omc
 output
+
+# Pretrained model weights (download separately from HuggingFace)
+pretrained_models/
